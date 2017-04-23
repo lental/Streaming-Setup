@@ -1,0 +1,54 @@
+// ==UserScript==
+// @name         Facebook Live Chat Rewrite
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Change my livestream video pages into a green-screened chat widget for broadcasting software
+// @author       Michael Len
+// @match        https://www.facebook.com/mikelen/videos/*
+// @grant        none
+// @run-at document-idle
+// ==/UserScript==
+
+
+// To Use:
+// 1. Install Tampermonkey Chrome browser plugin
+// 2. Add this as a userscript
+// 3. Change the @match to match your personal videos
+
+// NOTE: This script feels really fragile - Any changes to Facebook's minification output may mess up my class name references. 
+
+(function() {
+    'use strict';
+
+    // Get the video element and pause
+    // TODO: this has a race condition with the loading of the website.  Workaround is to refresh till it works :|.
+    var video = document.getElementsByClassName("_ox1")[0];
+    video.pause();
+    video.volume = 0;
+
+    // Move the comments to the Body, remove the rest of the UI
+    var comments = document.getElementsByClassName("uiUfi UFIContainer _5pc9 _5vsj _5v9k")[0];
+    var comments_parent = document.getElementsByClassName("commentable_item")[0];
+    comments_parent.removeChild(comments);
+    document.body.appendChild(comments);
+    var rest = document.getElementsByClassName("_li");
+    document.body.removeChild(rest[0]);
+    
+    
+    
+    // Add the styling rules to make everything look good
+    var sheet = window.document.styleSheets[0];
+    sheet.insertRule('body { background-color:#0f0 !important; }', sheet.cssRules.length);
+    sheet.insertRule('body a { color:white !important; }', sheet.cssRules.length);
+    sheet.insertRule('.UFIRow { color:white; background-color: rgba(0,0,0,.5) !important; font-size: 25px; }', sheet.cssRules.length);
+    sheet.insertRule('.uiUfi { background-color: transparent !important; }', sheet.cssRules.length);
+    sheet.insertRule('.UFICommentActions { display: none !important; }', sheet.cssRules.length);
+    sheet.insertRule('.UFIAddComment { display:none; }', sheet.cssRules.length);
+    sheet.insertRule('._1g5v { width:130px !important }', sheet.cssRules.length);
+    sheet.insertRule('._5vsj ._1g5v+._4arz { background-color: transparent !important; float:none !important; } ', sheet.cssRules.length);
+    sheet.insertRule('._ipp { line-height:normal !important; } ', sheet.cssRules.length);
+    sheet.insertRule('._2x4v { max-height: initial !important; } ', sheet.cssRules.length);
+    sheet.insertRule('._4ar- ._3t54 { font-size: 21px !important; } ', sheet.cssRules.length);
+    sheet.insertRule('.UFILikeSentence ._4ar- ._3emk { background:transparent !important } ', sheet.cssRules.length);
+    sheet.insertRule(' ._3t53 { white-space: normal !important; } ', sheet.cssRules.length);
+})();
